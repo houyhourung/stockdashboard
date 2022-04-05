@@ -28,6 +28,7 @@ if stock_ticker:
 else:
     st.warning("Please input a Stock's ticker")
 
+#There should be a new comment here in GitHub
 information_block = st.checkbox("See an Overview of the Company")
 if information_block:
     st.info(stockYahoo.info['longBusinessSummary'])
