@@ -1,5 +1,6 @@
-import streamlit as st
-import yfinance as yf
+import streamlit as st #Streamlit Application
+import yfinance as yf #Yahoo Finance API
+import googlemaps
 import requests
 import config
 
@@ -9,12 +10,27 @@ st.set_page_config(
     page_icon="chart_with_upwards_trend",
     layout="wide",
 )
-st.title("Stock Market Dashboard")
+#Streamlit SideBar Navigation
+st.sidebar.subheader("Stock Dashboard")
 
 #Input from the user in order to get a Stock
-stock_ticker= st.text_input("Enter a valid stock ticker....AAPL")
+stock_ticker=  st.sidebar.text_input("Enter a valid stock ticker....AAPL")
 api_token= config.stockData_api_key
 stockYahoo = yf.Ticker(stock_ticker)
+
+def information():
+
+    # This gives an overview of the company - Information Box Widget
+    information_block = st.sidebar.checkbox("See an Overview of the Company")
+    if information_block:
+        st.info(stockYahoo.info['longBusinessSummary'])
+
+    headquarter_map = st.sidebar.checkbox("See the Company's Headquarter")
+    if headquarter_map:
+        address = (stockYahoo.info['address1'], stockYahoo.info['city'])
+        st.write(address)
+    pass
+
 
 if stock_ticker:
     parameters = {
@@ -24,19 +40,11 @@ if stock_ticker:
     stockData_url= "https://api.stockdata.org/v1/data/quote?"
     stockData= requests.get(stockData_url, params=parameters).json()
 
+    st.title(stockData["data"][0]["name"] + "'s Dashboard")
     st.write(stockData)
+    information()
 else:
     st.warning("Please input a Stock's ticker")
-
-#There should be a new comment here in GitHub
-information_block = st.checkbox("See an Overview of the Company")
-if information_block:
-    st.info(stockYahoo.info['longBusinessSummary'])
-
-headquarter_map = st.checkbox("See the Company's Headquarter")
-if headquarter_map:
-    company_name = yf.Ticker(stock_ticker).info['longName']
-    st.write(company_name)
 
 #Introduction to the Map Class
 def map_creator(latitude,longitude):
