@@ -29,11 +29,26 @@ def information():
 def map():
     headquarter_map = st.sidebar.checkbox("See the Company's Headquarter")
     if headquarter_map:
-        address = (stockYahoo.info['address1'], stockYahoo.info['city'])
-        st.write(address)
-
+        address = (stockYahoo.info['address1'], stockYahoo.info['city'],stockYahoo.info['state'])
+        from geopy.geocoders import Nominatim
+        geolocator = Nominatim(user_agent="sample app")
+        data = geolocator.geocode(address)
+        data.raw.get("lat"), data.raw.get("lon")
+        st.write(data.point.latitude, data.point.longitude)
+        #map_creator(data.point)
     pass
 
+def map_creator(latitude,longitude):
+    from streamlit_folium import folium_static
+    import folium
+    # center on the station
+    m = folium.Map(location=[latitude, longitude], zoom_start=10)
+
+    # add marker for the station
+    folium.Marker([latitude, longitude], popup="Station", tooltip="Station").add_to(m)
+
+    # call to render Folium map in Streamlit
+    folium_static(m)
 
 if stock_ticker:
     parameters = {
@@ -49,4 +64,3 @@ if stock_ticker:
     map()
 else:
     st.warning("Please input a Stock's ticker")
-
