@@ -1,6 +1,5 @@
 import streamlit as st #Streamlit Application
 import yfinance as yf #Yahoo Finance API
-import googlemaps
 import requests
 import config
 
@@ -29,14 +28,20 @@ def information():
 def map():
     headquarter_map = st.sidebar.checkbox("See the Company's Headquarter")
     if headquarter_map:
+        #Getting address from YahooFinance API
         address = (stockYahoo.info['address1'], stockYahoo.info['city'],stockYahoo.info['state'])
-
+        #Import geopy and geolocator
         from geopy.geocoders import Nominatim
-        geolocator = Nominatim(user_agent="sample app")
+        geolocator = Nominatim(user_agent="stock dashboard")
+        #Getting logitude and latitude from adress 
         data = geolocator.geocode(address)
-        data.raw.get("lat"), data.raw.get("lon")
-        st.write(data.point)
-        #map_creator(data.point)
+        #Checking to see if either longitude or latidue is empty
+        if not data.longitude or not data.latitude:
+            st.error("We encoutered an error displaying the map. We apologize for any inconveniences this might cause.")
+        else:
+            latitude= data.latitude
+            longitude= data.longitude
+            map_creator(latitude, longitude)
     pass
 
 def map_creator(latitude,longitude):
@@ -58,10 +63,10 @@ if stock_ticker:
     }
     stockData_url= "https://api.stockdata.org/v1/data/quote?"
     stockData= requests.get(stockData_url, params=parameters).json()
-
     st.title(stockData["data"][0]["name"] + "'s Dashboard")
-    st.write(stockData)
+    #st.write(stockData)
     information()
+    st.header(stockData["data"][0]["name"] + "'s Headquarter")
     map()
 else:
     st.warning("Please input a Stock's ticker")
