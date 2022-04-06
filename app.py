@@ -30,11 +30,12 @@ def map():
     headquarter_map = st.sidebar.checkbox("See the Company's Headquarter")
     if headquarter_map:
         address = (stockYahoo.info['address1'], stockYahoo.info['city'],stockYahoo.info['state'])
+
         from geopy.geocoders import Nominatim
         geolocator = Nominatim(user_agent="sample app")
         data = geolocator.geocode(address)
         data.raw.get("lat"), data.raw.get("lon")
-        st.write(data.point.latitude, data.point.longitude)
+        st.write(data.point)
         #map_creator(data.point)
     pass
 
