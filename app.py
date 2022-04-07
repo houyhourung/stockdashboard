@@ -33,7 +33,7 @@ def map():
     headquarter_map = st.sidebar.checkbox("See the Company's Headquarter")
     if headquarter_map:
         #Polygon.io url - API Link in order to get information
-        polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
+        polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=INSERTKEY".format(
             stock_ticker)
         #Polygon.io Response from API
         polyresponse = requests.get(polystocks_url).json()
