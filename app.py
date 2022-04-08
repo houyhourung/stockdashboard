@@ -12,16 +12,11 @@ st.set_page_config(
 st.sidebar.subheader("Stock Dashboard")
 
 #Input from the user in order to get a Stock
-stock_ticker=  st.sidebar.text_input("Enter a valid stock ticker....AAPL")
+stock_ticker=  st.sidebar.text_input("Enter a valid stock ticker....GOOG")
 api_token= config.stockData_api_key
 
 # This gives an overview of the company - Information Box Widget
 def information():
-    # Polygon.io url - API Link in order to get information
-    polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
-        stock_ticker)
-    # Polygon.io Response from API
-    polyresponse = requests.get(polystocks_url).json()
     information_block = st.sidebar.checkbox("See an Overview of the Company")
     if information_block:
         description = polyresponse["results"]["description"]
@@ -32,12 +27,6 @@ def information():
 def map():
     headquarter_map = st.sidebar.checkbox("See the Company's Headquarter")
     if headquarter_map:
-        #Polygon.io url - API Link in order to get information
-        polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=INSERTKEY".format(
-            stock_ticker)
-        #Polygon.io Response from API
-        polyresponse = requests.get(polystocks_url).json()
-
         if polyresponse["status"] == "OK":
             address1 = polyresponse["results"]["address"]["address1"], polyresponse["results"]["address"]["city"], \
                        polyresponse["results"]["address"]["state"]
@@ -82,7 +71,10 @@ if stock_ticker:
     stockData_url= "https://api.stockdata.org/v1/data/quote?"
     stockData= requests.get(stockData_url, params=parameters).json()
     st.title(stockData["data"][0]["name"] + "'s Dashboard")
-    #st.write(stockData)
+    polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
+        stock_ticker)
+    # Polygon.io Response from API
+    polyresponse = requests.get(polystocks_url).json()
     information()
     map()
 else:
