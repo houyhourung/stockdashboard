@@ -15,6 +15,13 @@ st.sidebar.subheader("Stock Dashboard")
 stock_ticker=  st.sidebar.text_input("Enter a valid stock ticker....GOOG")
 api_token= config.stockData_api_key
 
+# Check to see if an address is avaliable from the API:
+def checkAddress(address):
+    if 'address' in address:
+        return True
+    else:
+        return False
+
 # This gives an overview of the company - Information Box Widget
 def information():
     information_block = st.sidebar.checkbox("See an Overview of the Company")
@@ -28,27 +35,32 @@ def map():
     headquarter_map = st.sidebar.checkbox("See the Company's Headquarter")
     if headquarter_map:
         if polyresponse["status"] == "OK":
-            address1 = polyresponse["results"]["address"]["address1"], polyresponse["results"]["address"]["city"], \
+            if 'address' in polyresponse["results"]:
+                address1 = polyresponse["results"]["address"]["address1"], polyresponse["results"]["address"]["city"], \
                        polyresponse["results"]["address"]["state"]
-            st.header(stockData["data"][0]["name"] + "'s Headquarter")
+                st.header(stockData["data"][0]["name"] + "'s Headquarter")
+                #Import geopy and geolocator
+                from geopy.geocoders import Nominatim
+
+                geolocator = Nominatim(user_agent="stock dashboard")
+
+                #Getting logitude and latitude from address
+                data = geolocator.geocode(address1)
+
+                #Checking to see if either longitude or latidue is empty
+                if data == None:
+                    st.error("There is no address avaliable")
+                else:
+                    latitude= data.latitude
+                    longitude= data.longitude
+                    map_creator(latitude, longitude)
+            else: 
+                st.error("There is no address avaliable")
+            
         else:
             st.error("Please check the Ticker Symbol you have submitted and try again")
 
-        #Import geopy and geolocator
-        from geopy.geocoders import Nominatim
-
-        geolocator = Nominatim(user_agent="stock dashboard")
-
-        #Getting logitude and latitude from address
-        data = geolocator.geocode(address1)
-        #Checking to see if either longitude or latidue is empty
-
-        if not data.longitude or not data.latitude:
-            st.error("We encountered an error displaying the map. We apologize for any inconveniences this might cause.")
-        else:
-            latitude= data.latitude
-            longitude= data.longitude
-            map_creator(latitude, longitude)
+        
     pass
 
 def map_creator(latitude,longitude):
