@@ -15,13 +15,6 @@ st.sidebar.subheader("Stock Dashboard")
 stock_ticker=  st.sidebar.text_input("Enter a valid stock ticker....GOOG")
 api_token= config.stockData_api_key
 
-# Check to see if an address is avaliable from the API:
-def checkAddress(address):
-    if 'address' in address:
-        return True
-    else:
-        return False
-
 # This gives an overview of the company - Information Box Widget
 def information():
     information_block = st.sidebar.checkbox("See an Overview of the Company")
