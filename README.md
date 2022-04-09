@@ -12,6 +12,11 @@
 
 `pip install streamlit`
 
+## Installing Dependent Packages:
+
+`pip install yfinance`
+`pip install geopy`
+
 ## Running the App:
 
 `streamlit run app.py`
