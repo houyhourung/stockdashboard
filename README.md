@@ -2,25 +2,33 @@
 
 ## Cloning the Repository:
 
-`git clone https://github.com/BackLeftGroup/stockmarket.git`
+>`git clone https://github.com/BackLeftGroup/stockmarket.git`
 
 ## Create the Virtual Environment for the Project:
 
-`python3 -m venv env && source ./env/bin/activate`
+### MacOS: 
+
+>`python3 -m venv env && source ./env/bin/activate`
+
+### Windows:
+
+> `python3 -m venv env`\
+> `env\Scripts\activate`
 
 ## Installing Streamlit:
 
-`pip install streamlit`
+>`pip install streamlit`
 
 ## Installing Dependent Packages:
 
-`pip install yfinance`
-`pip install geopy`
+>`pip install yfinance`\
+>`pip install geopy`\
+>`pip install streamlit-folium`
+
 
 ## Running the App:
 
-`streamlit run app.py`
-
+>`streamlit run app.py`
 
 
 
