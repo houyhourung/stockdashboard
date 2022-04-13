@@ -1,6 +1,7 @@
 import streamlit as st #Streamlit Application
 import requests
 import config
+import pandas as pd
 
 #Changes the Favicon and Tab Title
 st.set_page_config(
@@ -90,3 +91,18 @@ if stock_ticker:
         st.error("Please check the Ticker Symbol you have submitted and try again")
 else:
     st.warning("Please input a Stock's ticker")
+
+    st.subheader("Popular Stocks in the Market")
+    #Creates button so that users can choose what data they want to show onto the table
+    parameters_table = st.multiselect(
+                "Select one or more parameters to display in the interactive table",
+                ["Low", "High", "Market cap", "Currency", "Volume"])
+
+    #Line 96 is reading the CSV file with an updated file of the most popular stocks
+    popular_stocks = pd.read_csv('Popular_Stocks2.csv')
+    #Line 98 displays the data as a dataframe(interactive table)
+    st.dataframe(popular_stocks[["Company", "Ticker symbol", "Price"] + parameters_table])
+
+    st.caption("The information above can be displayed based on what the user wants to see.")
+
+
