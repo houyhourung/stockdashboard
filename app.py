@@ -12,16 +12,20 @@ st.set_page_config(
 st.sidebar.subheader("Stock Dashboard")
 
 #Input from the user in order to get a Stock
-stock_ticker=  st.sidebar.text_input("Enter a valid stock ticker....GOOG")
+userInput=  st.sidebar.text_input("Enter a valid stock ticker....GOOG")
+stock_ticker= userInput.upper()
 api_token= config.stockData_api_key
 
 # This gives an overview of the company - Information Box Widget
 def information():
     information_block = st.sidebar.checkbox("See an Overview of the Company")
     if information_block:
-        description = polyresponse["results"]["description"]
-        st.write(description)
-        pass
+        if polyresponse["status"] == "NOT_FOUND":
+            st.error("No ticker found, please check input")
+        else:
+            description = polyresponse["results"]["description"]
+            st.write(description)
+    pass
 
 # Map class
 def map():
@@ -73,6 +77,7 @@ if stock_ticker:
     }
     stockData_url= "https://api.stockdata.org/v1/data/quote?"
     stockData= requests.get(stockData_url, params=parameters).json()
+    
     st.title(stockData["data"][0]["name"] + "'s Dashboard")
     polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
         stock_ticker)
@@ -82,3 +87,5 @@ if stock_ticker:
     map()
 else:
     st.warning("Please input a Stock's ticker")
+
+# testing
