@@ -12,10 +12,33 @@ st.set_page_config(
 #Streamlit SideBar Navigation
 st.sidebar.subheader("Stock Dashboard")
 
+
+def interactive_table():
+    st.subheader("Popular Stocks in the Market")
+    # Creates button so that users can choose what data they want to show onto the table
+    parameters_table = st.multiselect(
+        "Select one or more parameters to display in the interactive table",
+        ["Low", "High", "Market cap", "Currency", "Volume"])
+
+    # Line 96 is reading the CSV file with an updated file of the most popular stocks
+    popular_stocks = pd.read_csv('Popular_Stocks2.csv')
+    # Line 98 displays the data as a dataframe(interactive table)
+    st.dataframe(popular_stocks[["Company", "Ticker symbol", "Price"] + parameters_table])
+
+    st.caption("The information above can be displayed based on what the user wants to see.")
+
+    pass
+
+
 #Input from the user in order to get a Stock
 userInput = st.sidebar.text_input("Enter a valid stock ticker....GOOG")
 stock_ticker= userInput.upper()
 api_token= config.stockData_api_key
+interactive_table()
+
+
+
+
 
 # This gives an overview of the company - Information Box Widget
 def information():
@@ -92,17 +115,5 @@ if stock_ticker:
 else:
     st.warning("Please input a Stock's ticker")
 
-    st.subheader("Popular Stocks in the Market")
-    #Creates button so that users can choose what data they want to show onto the table
-    parameters_table = st.multiselect(
-                "Select one or more parameters to display in the interactive table",
-                ["Low", "High", "Market cap", "Currency", "Volume"])
-
-    #Line 96 is reading the CSV file with an updated file of the most popular stocks
-    popular_stocks = pd.read_csv('Popular_Stocks2.csv')
-    #Line 98 displays the data as a dataframe(interactive table)
-    st.dataframe(popular_stocks[["Company", "Ticker symbol", "Price"] + parameters_table])
-
-    st.caption("The information above can be displayed based on what the user wants to see.")
 
 
