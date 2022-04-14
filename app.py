@@ -1,6 +1,7 @@
 import streamlit as st #Streamlit Application
 import requests
 import config
+import pandas as pd
 
 #Changes the Favicon and Tab Title
 st.set_page_config(
@@ -8,23 +9,45 @@ st.set_page_config(
     page_icon="chart_with_upwards_trend",
     layout="wide",
 )
+#method to display interactive table
+def interactive_table():
+    st.subheader("Popular Stocks in the Market")
+    # Creates button so that users can choose what data they want to show onto the table
+    parameters_table = st.multiselect(
+        "Select one or more parameters to display in the interactive table",
+        ["Low", "High", "Market cap", "Currency", "Volume"])
+
+    # Line 96 is reading the CSV file with an updated file of the most popular stocks
+    popular_stocks = pd.read_csv('Popular_Stocks2.csv')
+    # Line 98 displays the data as a dataframe(interactive table)
+    st.dataframe(popular_stocks[["Company", "Ticker symbol", "Price"] + parameters_table])
+
 #Streamlit SideBar Navigation
 st.sidebar.subheader("Stock Dashboard")
 
 #Input from the user in order to get a Stock
+
 userInput=  st.sidebar.text_input("Enter a valid stock ticker....GOOG")
+
 stock_ticker= userInput.upper()
 api_token= config.stockData_api_key
+interactive_table()
+
+
+
+
 
 # This gives an overview of the company - Information Box Widget
 def information():
     information_block = st.sidebar.checkbox("See an Overview of the Company")
     if information_block:
+
         if polyresponse["status"] == "NOT_FOUND":
             st.error("No ticker found, please check input")
         else:
             description = polyresponse["results"]["description"]
             st.write(description)
+
     pass
 
 # Map class
@@ -77,6 +100,7 @@ if stock_ticker:
     }
     stockData_url= "https://api.stockdata.org/v1/data/quote?"
     stockData= requests.get(stockData_url, params=parameters).json()
+
     
     st.title(stockData["data"][0]["name"] + "'s Dashboard")
     polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
@@ -89,3 +113,4 @@ else:
     st.warning("Please input a Stock's ticker")
 
 # testing
+
