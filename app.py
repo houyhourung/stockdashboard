@@ -31,7 +31,9 @@ def interactive_table():
 
 
 #Input from the user in order to get a Stock
-userInput = st.sidebar.text_input("Enter a valid stock ticker....GOOG")
+
+userInput=  st.sidebar.text_input("Enter a valid stock ticker....GOOG")
+
 stock_ticker= userInput.upper()
 api_token= config.stockData_api_key
 interactive_table()
@@ -44,11 +46,13 @@ interactive_table()
 def information():
     information_block = st.sidebar.checkbox("See an Overview of the Company")
     if information_block:
-        if polyresponse["status"] == "OK":
+
+        if polyresponse["status"] == "NOT_FOUND":
+            st.error("No ticker found, please check input")
+        else:
             description = polyresponse["results"]["description"]
             st.write(description)
-        else:
-            st.error("Please check the Ticker Symbol you have submitted and try again")
+
     pass
 
 # Map class
@@ -101,19 +105,17 @@ if stock_ticker:
     }
     stockData_url= "https://api.stockdata.org/v1/data/quote?"
     stockData= requests.get(stockData_url, params=parameters).json()
-    if stockData["data"]:
-        company_name=stockData["data"][0]["name"]+ "'s Dashboard"
-        st.title(company_name.capitalize())
-        polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
-            stock_ticker)
-        # Polygon.io Response from API
-        polyresponse = requests.get(polystocks_url).json()
-        information()
-        map()
-    else:
-        st.error("Please check the Ticker Symbol you have submitted and try again")
+
+    
+    st.title(stockData["data"][0]["name"] + "'s Dashboard")
+    polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
+        stock_ticker)
+    # Polygon.io Response from API
+    polyresponse = requests.get(polystocks_url).json()
+    information()
+    map()
 else:
     st.warning("Please input a Stock's ticker")
 
-
+# testing
 
