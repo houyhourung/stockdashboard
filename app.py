@@ -1,9 +1,9 @@
-import streamlit as st #Streamlit Application
+import streamlit as st  # Streamlit Application
 import requests
 import config
 import pandas as pd
 
-#Changes the Favicon and Tab Title
+# Changes the Favicon and Tab Title
 st.set_page_config(
     page_title="Stock Dashboard",
     page_icon="chart_with_upwards_trend",
@@ -14,7 +14,7 @@ page = st.sidebar.selectbox("Choose your page", ["Home", "Stock Search"])
 
 if page == "Home":
     # Display details of page 1
-    #method to display interactive table
+    # method to display interactive table
     def interactive_table():
         st.subheader("Popular Stocks in the Market")
         # Creates button so that users can choose what data they want to show onto the table
@@ -31,7 +31,7 @@ if page == "Home":
     interactive_table()
 
 elif page == "Stock Search":
-  # This gives an overview of the company - Information Box Widget
+    # This gives an overview of the company - Information Box Widget
     def information():
         information_block = st.sidebar.checkbox("See an Overview of the Company")
         name = stockData["data"][0]["name"]
@@ -46,29 +46,31 @@ elif page == "Stock Search":
                 st.write(description)
         pass
 
+
     # Map class
     def map():
         headquarter_map = st.sidebar.checkbox("See the Company's Headquarter")
         if headquarter_map:
             if polyresponse["status"] == "OK":
                 if 'address' in polyresponse["results"]:
-                    address1 = polyresponse["results"]["address"]["address1"], polyresponse["results"]["address"]["city"], \
-                           polyresponse["results"]["address"]["state"]
+                    address1 = polyresponse["results"]["address"]["address1"], polyresponse["results"]["address"][
+                        "city"], \
+                               polyresponse["results"]["address"]["state"]
                     st.subheader(stockData["data"][0]["name"] + "'s Headquarter")
-                    #Import geopy and geolocator
+                    # Import geopy and geolocator
                     from geopy.geocoders import Nominatim
 
                     geolocator = Nominatim(user_agent="stock dashboard")
 
-                    #Getting logitude and latitude from address
+                    # Getting logitude and latitude from address
                     data = geolocator.geocode(address1)
 
-                    #Checking to see if either longitude or latidue is empty
+                    # Checking to see if either longitude or latidue is empty
                     if data == None:
                         st.error("There is no address avaliable")
                     else:
-                        latitude= data.latitude
-                        longitude= data.longitude
+                        latitude = data.latitude
+                        longitude = data.longitude
                         map_creator(latitude, longitude)
                 else:
                     st.error("There is no address avaliable")
@@ -76,16 +78,16 @@ elif page == "Stock Search":
             else:
                 st.error("Please check the Ticker Symbol you have submitted and try again")
 
-
         pass
 
+
     def price():
+        name = stockData["data"][0]["name"]
+        st.subheader(name + "'s Previous Day Closing Information")
         col1, col2, col3 = st.columns(3)
         polystocks_url2 = "https://api.polygon.io/v2/aggs/ticker/{}/" \
                           "prev?adjusted=true&apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(stock_ticker)
         polyresponse2 = requests.get(polystocks_url2).json()
-        name = stockData["data"][0]["name"]
-        st.subheader(name + "'s Previous Day Closing Information")
 
         if st.button('See Previous Closing Information'):
             if polyresponse2["status"] == "OK":
@@ -95,6 +97,7 @@ elif page == "Stock Search":
                 openprice = polyresponse2["results"][0]["o"]
                 ntrans = polyresponse2["results"][0]["n"]
                 volume = polyresponse2["results"][0]["v"]
+
                 with col1:
 
                     st.write(name + "'s Opening Price")
@@ -122,8 +125,7 @@ elif page == "Stock Search":
                 st.error("No ticker found, please check input")
 
 
-
-    def map_creator(latitude,longitude):
+    def map_creator(latitude, longitude):
         from streamlit_folium import folium_static
         import folium
         # center on the station
@@ -133,30 +135,32 @@ elif page == "Stock Search":
         # call to render Folium map in Streamlit
         folium_static(m)
 
-    #Streamlit SideBar Navigation
+
+    # Streamlit SideBar Navigation
     st.sidebar.subheader("Stock Dashboard")
 
-    #Input from the user in order to get a Stock
-    userInput=  st.sidebar.text_input("Enter a valid stock ticker....GOOG")
+    # Input from the user in order to get a Stock
+    userInput = st.sidebar.text_input("Enter a valid stock ticker....GOOG")
 
-    stock_ticker= userInput.upper()
-    api_token= config.stockData_api_key
+    stock_ticker = userInput.upper()
+    api_token = config.stockData_api_key
 
     if stock_ticker:
         parameters = {
-        "symbols": stock_ticker,
-        "api_token": api_token
+            "symbols": stock_ticker,
+            "api_token": api_token
         }
-        stockData_url= "https://api.stockdata.org/v1/data/quote?"
-        stockData= requests.get(stockData_url, params=parameters).json()
-
+        stockData_url = "https://api.stockdata.org/v1/data/quote?"
+        stockData = requests.get(stockData_url, params=parameters).json()
 
         st.title(stockData["data"][0]["name"] + "'s Dashboard")
+        st.info("Please open the Sidebar to select the Data populated on your Dashboard")
+
         polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
             stock_ticker)
         # Polygon.io Response from API
         polyresponse = requests.get(polystocks_url).json()
-        col1, col2= st.columns(2)
+        col1, col2 = st.columns(2)
         price()
         with col1:
             information()
@@ -166,4 +170,3 @@ elif page == "Stock Search":
         st.warning("Please input a Stock's ticker")
 
 # testing
-
