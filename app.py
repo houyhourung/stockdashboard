@@ -9,10 +9,7 @@ st.set_page_config(
     page_icon="chart_with_upwards_trend",
     layout="wide",
 )
-#Streamlit SideBar Navigation
-st.sidebar.subheader("Stock Dashboard")
-
-
+#method to display interactive table
 def interactive_table():
     st.subheader("Popular Stocks in the Market")
     # Creates button so that users can choose what data they want to show onto the table
@@ -25,10 +22,8 @@ def interactive_table():
     # Line 98 displays the data as a dataframe(interactive table)
     st.dataframe(popular_stocks[["Company", "Ticker symbol", "Price"] + parameters_table])
 
-    st.caption("The information above can be displayed based on what the user wants to see.")
-
-    pass
-
+#Streamlit SideBar Navigation
+st.sidebar.subheader("Stock Dashboard")
 
 #Input from the user in order to get a Stock
 
