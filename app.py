@@ -1,7 +1,9 @@
+import numpy as np
 import streamlit as st #Streamlit Application
 import requests
 import config
 import pandas as pd
+import csv
 
 #Changes the Favicon and Tab Title
 st.set_page_config(
@@ -27,8 +29,31 @@ if page == "Home":
         # Line 98 displays the data as a dataframe(interactive table)
         st.dataframe(popular_stocks[["Company", "Ticker symbol", "Price"] + parameters_table])
 
+    # Bar graph compares popular stock prices
+    def bar_graph():
+        st.subheader("Popular Stocks in the Market (Price Comparison)")
+        st.warning("Prices are not updated in real time.")
+        # x_axis array is utilizing CSV file to import ticker symbols.
+        x_axis = []
+        with open('popular_stock_tickers.csv', newline='') as inputfile:
+            for row in csv.reader(inputfile):
+                x_axis.append(row[0])
+        # y_axis array is utilizing CSV file to import stock prices.
+        y_axis = []
+        with open('popular_stock_prices.csv', newline='') as inputfile:
+            for row in csv.reader(inputfile):
+                y_axis.append(row[0])
+        # Index is the list of ticker symbols (names)
+        data = pd.DataFrame({
+            'index': x_axis,
+            'Stock Price (USD)': y_axis,
+        }).set_index('index')
+        # displaying bar-chart
+        st.bar_chart(data)
+
 
     interactive_table()
+    bar_graph()
 
 elif page == "Stock Search":
   # This gives an overview of the company - Information Box Widget
@@ -166,4 +191,3 @@ elif page == "Stock Search":
         st.warning("Please input a Stock's ticker")
 
 # testing
-
