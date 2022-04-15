@@ -1,6 +1,4 @@
 from ast import AsyncFunctionDef
-from datetime import date
-from datetime import timedelta 
 from pyparsing import line
 import streamlit as st #Streamlit Application
 import requests
@@ -126,7 +124,17 @@ elif page == "Stock Search":
             else:
                 st.error("No ticker found, please check input")
 
-
+    #Creating line graph
+    def linegraph():
+        alpha_vantage_url="https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(stock_ticker,config.alpha_vantage_api_key)
+        line_stock_data=requests.get(alpha_vantage_url).json()
+        #creating graph using DataFrame
+        data = pd.DataFrame.from_dict(line_stock_data['Time Series (Daily)'], orient= 'index').sort_index(axis=1)
+        data = data.rename(columns={ '1. open': 'Open', '2. high': 'High', '3. low': 'Low', '4. close': 'Close', '5. volume': 'Volume'})
+        data = data[[ 'Open', 'High', 'Low', 'Close', 'Volume']]
+        #showing the last 5 days open, high, low, close, and volume price of the stock
+        st.line_chart(data=data.tail(5))
+    
 
     def map_creator(latitude,longitude):
         from streamlit_folium import folium_static
@@ -137,34 +145,7 @@ elif page == "Stock Search":
         folium.Marker([latitude, longitude], popup="HeadQuarters", tooltip="HeadQuarters").add_to(m)
         # call to render Folium map in Streamlit
         folium_static(m)
-
-    #Creating line graph
-    def linegraph():
-        #getting today date
-        today = date.today()
-        day = timedelta(days = 1)
-        #getting yesterday date and format it into API desirable format
-        yesterday = today - day
-        yesterday.strftime("%Y-%m-%d")
-        #Polystock api url
-        polystocks_line_graph_url="https://api.polygon.io/v1/open-close/{}/{}?adjusted=true&apiKey={}".format(stock_ticker, yesterday, config.polygon_line_graph_api_key)
-        line_stock_data=requests.get(polystocks_line_graph_url).json()
-        #chekcking to see if the call is successful
-        if line_stock_data["status"] == "OK":
-            st.subheader("Graph Price from Previous Day")
-            stock_open= line_stock_data["open"]
-            stock_low=line_stock_data["low"]
-            stock_high= line_stock_data["close"]
-            data=pd.DataFrame({
-                'Open Price': [stock_open],
-                'High Price': [stock_high],
-                'Low Price': [stock_low],
-            }, index=['Open Price', 'High Price', 'Low Price'])
-            st.line_chart(data=data)
-        else:
-            st.error("Information is not avaliable")
-        
-        
+    
     
     #Streamlit SideBar Navigation
     st.sidebar.subheader("Stock Dashboard")
@@ -182,11 +163,10 @@ elif page == "Stock Search":
         }
         stockData_url= "https://api.stockdata.org/v1/data/quote?"
         stockData= requests.get(stockData_url, params=parameters).json()
+        
         if not stockData["data"]:
             st.error("Please check your stock ticker input and try again")
-            
         else:
-            
             st.title(stockData["data"][0]["name"] + "'s Dashboard")
             polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey={}".format(
                 stock_ticker, config.polygon_line_graph_api_key)
@@ -194,6 +174,7 @@ elif page == "Stock Search":
             polyresponse = requests.get(polystocks_url).json()
             col1, col2= st.columns(2)
             price()
+            st.subheader(stockData["data"][0]["name"] + "'s Last 5 Days Prices (open, high, low, close) and Volumes")
             linegraph()
             with col1:
                 information()
