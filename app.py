@@ -12,7 +12,7 @@ st.set_page_config(
     layout="wide",
 )
 
-page = st.sidebar.selectbox("Choose your page", ["Home", "Stock Search"])
+page = st.sidebar.selectbox("Choose your page", ["Home", "Stock Search", "Data Visualization"])
 
 if page == "Home":
     # Display details of page 1
@@ -29,10 +29,15 @@ if page == "Home":
         # Line 98 displays the data as a dataframe(interactive table)
         st.dataframe(popular_stocks[["Company", "Ticker symbol", "Price"] + parameters_table])
 
-    # Bar graph compares popular stock prices
+    interactive_table()
+
+# Created new page for data visualization (bar-chart & line-chart)
+elif page == "Data Visualization":
+    # Bar graph created to compare popular stock prices
     def bar_graph():
         st.subheader("Popular Stocks in the Market (Price Comparison)")
-        st.warning("Prices are not updated in real time.")
+        # Warning, requested by professor, to document static data.
+        st.warning("Stock prices are not updated in real time.")
         # x_axis array is utilizing CSV file to import ticker symbols.
         x_axis = []
         with open('popular_stock_tickers.csv', newline='') as inputfile:
@@ -46,13 +51,14 @@ if page == "Home":
         # Index is the list of ticker symbols (names)
         data = pd.DataFrame({
             'index': x_axis,
-            'Stock Price (USD)': y_axis,
+            'Stock Price (USD)': [2567.49, 167.66, 282.06, 130.84,3015.75, 79.79, 48.83, 153.23, 31.99, 33.45, 108.25, 231.34, 44.48, 47.35],
         }).set_index('index')
         # displaying bar-chart
         st.bar_chart(data)
-
-
-    interactive_table()
+        # Two widgets created for bar customization (width and height)
+        bar_width = st.slider('Select bar width', 0, 10, 0)
+        bar_height = st.slider('Select bar height', 0, 10, 0)
+    # calling bar-graph function
     bar_graph()
 
 elif page == "Stock Search":
