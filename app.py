@@ -29,6 +29,54 @@ if page == "Home":
 
 
     interactive_table()
+#Adding a page for the line chart
+    def prueba():
+        popular_stocks = pd.read_csv('Popular_Stocks2.csv') 
+
+# Widget (if check box is selected displays Chart data size)
+        amountElements = st.sidebar.checkbox(
+            'Show element quantity')
+
+#Widget (on the side bar showing which line graph you would like to see)    
+        element = st.sidebar.radio(
+            "Select element",
+            ('Price', 'high', 'low','all'))
+        if element == 'Price':
+            d = {'Price': popular_stocks["Price"]}
+            chart_data = pd.DataFrame(
+                data=d)
+
+            st.line_chart(chart_data)
+            if amountElements:
+                st.write("Quantity:", chart_data.size)
+        elif element == 'low':
+                d = {'low': popular_stocks["Low"]}
+                chart_data = pd.DataFrame(
+                    data=d)
+
+                st.line_chart(chart_data)
+                if amountElements:
+                    st.write("Quantity:", chart_data.size)
+        elif element == 'high':
+                d = {'high': popular_stocks["High"]}
+                chart_data = pd.DataFrame(
+                    data=d)
+
+                st.line_chart(chart_data)
+                if amountElements:
+                    st.write("Quantity:", chart_data.size)
+        elif element == 'all':
+                d = {'Price': popular_stocks["Price"], 'high': popular_stocks["High"], 'low': popular_stocks["Low"]}
+                chart_data = pd.DataFrame(
+                data=d)
+
+                st.line_chart(chart_data)
+                if amountElements:
+                    st.write("Quantity:", chart_data.size)
+
+    prueba()
+    pass
+
 
 elif page == "Stock Search":
   # This gives an overview of the company - Information Box Widget
@@ -166,73 +214,3 @@ elif page == "Stock Search":
         st.warning("Please input a Stock's ticker")
 
 # testing
-
-#Jairo's Line Chart 
-
-#Adding a page for the line chart
-elif page == "Line Chart":
-    def prueba():
-        popular_stocks = pd.read_csv('Popular_Stocks2.csv')  #Using the cvs file since I could not figure out with the api
-        
-       #All this commented out code is my failures, It tried so much and I could not get it to work with API data to make it useful 
-#        st.dataframe(popular_stocks[["Company", "Ticker symbol", "Price"] + parameters_table])
-#        polystocks_url3 = "https://api.polygon.io/v2/aggs/ticker/{}/" \
-#                          "prev?adjusted=true&apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(stock_ticker)
-#        polyresponse3 = requests.get(polystocks_url3).json()
-
-#        if polyresponse3["status"] == "OK":
-#            closeprice = polyresponse3["results"][0]["c"]
-#            highestprice = polyresponse3["results"][0]["h"]
-#            lowestprice = polyresponse3["results"][0]["l"]
-#            d = {'closeprice':closeprice, 'highestprice': [3, 4], 'lowestprice': [5, 8]}
-#            chart_data = pd.DataFrame(
-#            data=d)
-#
-#            st.line_chart(chart_data)
-#        else:
-#            st.error("no sirve")
-
-
-# Widget (if check box is selected displays Chart data size)
-        amountElements = st.sidebar.checkbox(
-            'Show element quantity')
-
-#Widget (on the side bar showing which line graph you would like to see)    
-        element = st.sidebar.radio(
-            "Select element",
-            ('Price', 'high', 'low','all'))
-        if element == 'Price':
-            d = {'Price': popular_stocks["Price"]}
-            chart_data = pd.DataFrame(
-                data=d)
-
-            st.line_chart(chart_data)
-            if amountElements:
-                st.write("Quantity:", chart_data.size)
-        elif element == 'low':
-                d = {'low': popular_stocks["Low"]}
-                chart_data = pd.DataFrame(
-                    data=d)
-
-                st.line_chart(chart_data)
-                if amountElements:
-                    st.write("Quantity:", chart_data.size)
-        elif element == 'high':
-                d = {'high': popular_stocks["High"]}
-                chart_data = pd.DataFrame(
-                    data=d)
-
-                st.line_chart(chart_data)
-                if amountElements:
-                    st.write("Quantity:", chart_data.size)
-        elif element == 'all':
-                d = {'Price': popular_stocks["Price"], 'high': popular_stocks["High"], 'low': popular_stocks["Low"]}
-                chart_data = pd.DataFrame(
-                data=d)
-
-                st.line_chart(chart_data)
-                if amountElements:
-                    st.write("Quantity:", chart_data.size)
-
-    prueba()
-    pass
