@@ -1,9 +1,12 @@
+from ast import AsyncFunctionDef
+from pyparsing import line
 import numpy as np
 import streamlit as st #Streamlit Application
 import requests
 import config
 import pandas as pd
 import csv
+
 
 #Changes the Favicon and Tab Title
 st.set_page_config(
@@ -58,6 +61,57 @@ if page == "Home":
     interactive_table()
     bar_graph()
 
+    
+#Adding a page for the line chart
+    def prueba():
+        popular_stocks = pd.read_csv('Popular_Stocks2.csv') 
+
+# Widget (if check box is selected displays Chart data size)
+        amountElements = st.sidebar.checkbox(
+            'Show element quantity')
+
+#Widget (on the side bar showing which line graph you would like to see)    
+        element = st.sidebar.radio(
+            "Select element",
+            ('Price', 'high', 'low','all'))
+        if element == 'Price':
+            d = {'Price': popular_stocks["Price"]}
+            chart_data = pd.DataFrame(
+                data=d)
+
+            st.line_chart(chart_data)
+            if amountElements:
+                st.write("Quantity:", chart_data.size)
+        elif element == 'low':
+                d = {'low': popular_stocks["Low"]}
+                chart_data = pd.DataFrame(
+                    data=d)
+
+                st.line_chart(chart_data)
+                if amountElements:
+                    st.write("Quantity:", chart_data.size)
+        elif element == 'high':
+                d = {'high': popular_stocks["High"]}
+                chart_data = pd.DataFrame(
+                    data=d)
+
+                st.line_chart(chart_data)
+                if amountElements:
+                    st.write("Quantity:", chart_data.size)
+        elif element == 'all':
+                d = {'Price': popular_stocks["Price"], 'high': popular_stocks["High"], 'low': popular_stocks["Low"]}
+                chart_data = pd.DataFrame(
+                data=d)
+
+                st.line_chart(chart_data)
+                if amountElements:
+                    st.write("Quantity:", chart_data.size)
+
+    prueba()
+    pass
+
+
+
 elif page == "Stock Search":
   # This gives an overview of the company - Information Box Widget
     def information():
@@ -110,7 +164,7 @@ elif page == "Stock Search":
     def price():
         col1, col2, col3 = st.columns(3)
         polystocks_url2 = "https://api.polygon.io/v2/aggs/ticker/{}/" \
-                          "prev?adjusted=true&apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(stock_ticker)
+                          "prev?adjusted=true&apiKey={}".format(stock_ticker, config.polygon_line_graph_api_key)
         polyresponse2 = requests.get(polystocks_url2).json()
         name = stockData["data"][0]["name"]
         st.subheader(name + "'s Previous Day Closing Information")
@@ -149,7 +203,17 @@ elif page == "Stock Search":
             else:
                 st.error("No ticker found, please check input")
 
-
+    #Creating line graph
+    def linegraph():
+        alpha_vantage_url="https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(stock_ticker,config.alpha_vantage_api_key)
+        line_stock_data=requests.get(alpha_vantage_url).json()
+        #creating graph using DataFrame
+        data = pd.DataFrame.from_dict(line_stock_data['Time Series (Daily)'], orient= 'index').sort_index(axis=1)
+        data = data.rename(columns={ '1. open': 'Open', '2. high': 'High', '3. low': 'Low', '4. close': 'Close', '5. volume': 'Volume'})
+        data = data[[ 'Open', 'High', 'Low', 'Close', 'Volume']]
+        #showing the last 5 days open, high, low, close, and volume price of the stock
+        st.line_chart(data=data.tail(5))
+    
 
     def map_creator(latitude,longitude):
         from streamlit_folium import folium_static
@@ -160,7 +224,8 @@ elif page == "Stock Search":
         folium.Marker([latitude, longitude], popup="HeadQuarters", tooltip="HeadQuarters").add_to(m)
         # call to render Folium map in Streamlit
         folium_static(m)
-
+    
+    
     #Streamlit SideBar Navigation
     st.sidebar.subheader("Stock Dashboard")
 
@@ -177,20 +242,27 @@ elif page == "Stock Search":
         }
         stockData_url= "https://api.stockdata.org/v1/data/quote?"
         stockData= requests.get(stockData_url, params=parameters).json()
+        
+        if not stockData["data"]:
+            st.error("Please check your stock ticker input and try again")
+        else:
+            st.title(stockData["data"][0]["name"] + "'s Dashboard")
+            polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey={}".format(
+                stock_ticker, config.polygon_line_graph_api_key)
+            # Polygon.io Response from API
+            polyresponse = requests.get(polystocks_url).json()
+            col1, col2= st.columns(2)
+            price()
+            st.subheader(stockData["data"][0]["name"] + "'s Last 5 Days Prices (open, high, low, close) and Volumes")
+            linegraph()
+            with col1:
+                information()
+            with col2:
+                map()
 
-
-        st.title(stockData["data"][0]["name"] + "'s Dashboard")
-        polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
-            stock_ticker)
-        # Polygon.io Response from API
-        polyresponse = requests.get(polystocks_url).json()
-        col1, col2= st.columns(2)
-        price()
-        with col1:
-            information()
-        with col2:
-            map()
     else:
         st.warning("Please input a Stock's ticker")
 
+
 # testing
+
