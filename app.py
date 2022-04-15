@@ -87,7 +87,7 @@ elif page == "Stock Search":
     def price():
         col1, col2, col3 = st.columns(3)
         polystocks_url2 = "https://api.polygon.io/v2/aggs/ticker/{}/" \
-                          "prev?adjusted=true&apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(stock_ticker)
+                          "prev?adjusted=true&apiKey={}".format(stock_ticker, config.polygon_line_graph_api_key)
         polyresponse2 = requests.get(polystocks_url2).json()
         name = stockData["data"][0]["name"]
         st.subheader(name + "'s Previous Day Closing Information")
@@ -188,8 +188,8 @@ elif page == "Stock Search":
         else:
             
             st.title(stockData["data"][0]["name"] + "'s Dashboard")
-            polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
-                stock_ticker)
+            polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey={}".format(
+                stock_ticker, config.polygon_line_graph_api_key)
             # Polygon.io Response from API
             polyresponse = requests.get(polystocks_url).json()
             col1, col2= st.columns(2)
