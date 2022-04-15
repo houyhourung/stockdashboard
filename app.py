@@ -32,6 +32,54 @@ if page == "Home":
 
 
     interactive_table()
+#Adding a page for the line chart
+    def prueba():
+        popular_stocks = pd.read_csv('Popular_Stocks2.csv') 
+
+# Widget (if check box is selected displays Chart data size)
+        amountElements = st.sidebar.checkbox(
+            'Show element quantity')
+
+#Widget (on the side bar showing which line graph you would like to see)    
+        element = st.sidebar.radio(
+            "Select element",
+            ('Price', 'high', 'low','all'))
+        if element == 'Price':
+            d = {'Price': popular_stocks["Price"]}
+            chart_data = pd.DataFrame(
+                data=d)
+
+            st.line_chart(chart_data)
+            if amountElements:
+                st.write("Quantity:", chart_data.size)
+        elif element == 'low':
+                d = {'low': popular_stocks["Low"]}
+                chart_data = pd.DataFrame(
+                    data=d)
+
+                st.line_chart(chart_data)
+                if amountElements:
+                    st.write("Quantity:", chart_data.size)
+        elif element == 'high':
+                d = {'high': popular_stocks["High"]}
+                chart_data = pd.DataFrame(
+                    data=d)
+
+                st.line_chart(chart_data)
+                if amountElements:
+                    st.write("Quantity:", chart_data.size)
+        elif element == 'all':
+                d = {'Price': popular_stocks["Price"], 'high': popular_stocks["High"], 'low': popular_stocks["Low"]}
+                chart_data = pd.DataFrame(
+                data=d)
+
+                st.line_chart(chart_data)
+                if amountElements:
+                    st.write("Quantity:", chart_data.size)
+
+    prueba()
+    pass
+
 
 elif page == "Stock Search":
   # This gives an overview of the company - Information Box Widget
@@ -183,6 +231,3 @@ elif page == "Stock Search":
 
     else:
         st.warning("Please input a Stock's ticker")
-
-
-
