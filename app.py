@@ -1,7 +1,12 @@
+from ast import AsyncFunctionDef
+from datetime import date
+from datetime import timedelta 
+from pyparsing import line
 import streamlit as st #Streamlit Application
 import requests
 import config
 import pandas as pd
+
 
 #Changes the Favicon and Tab Title
 st.set_page_config(
@@ -133,6 +138,34 @@ elif page == "Stock Search":
         # call to render Folium map in Streamlit
         folium_static(m)
 
+    #Creating line graph
+    def linegraph():
+        #getting today date
+        today = date.today()
+        day = timedelta(days = 1)
+        #getting yesterday date and format it into API desirable format
+        yesterday = today - day
+        yesterday.strftime("%Y-%m-%d")
+        #Polystock api url
+        polystocks_line_graph_url="https://api.polygon.io/v1/open-close/{}/{}?adjusted=true&apiKey={}".format(stock_ticker, yesterday, config.polygon_line_graph_api_key)
+        line_stock_data=requests.get(polystocks_line_graph_url).json()
+        #chekcking to see if the call is successful
+        if line_stock_data["status"] == "OK":
+            st.subheader("Graph Price from Previous Day")
+            stock_open= line_stock_data["open"]
+            stock_low=line_stock_data["low"]
+            stock_high= line_stock_data["close"]
+            data=pd.DataFrame({
+                'Open Price': [stock_open],
+                'High Price': [stock_high],
+                'Low Price': [stock_low],
+            }, index=['Open Price', 'High Price', 'Low Price'])
+            st.line_chart(data=data)
+        else:
+            st.error("Information is not avaliable")
+        
+        
+    
     #Streamlit SideBar Navigation
     st.sidebar.subheader("Stock Dashboard")
 
@@ -149,19 +182,24 @@ elif page == "Stock Search":
         }
         stockData_url= "https://api.stockdata.org/v1/data/quote?"
         stockData= requests.get(stockData_url, params=parameters).json()
+        if not stockData["data"]:
+            st.error("Please check your stock ticker input and try again")
+            
+        else:
+            
+            st.title(stockData["data"][0]["name"] + "'s Dashboard")
+            polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
+                stock_ticker)
+            # Polygon.io Response from API
+            polyresponse = requests.get(polystocks_url).json()
+            col1, col2= st.columns(2)
+            price()
+            linegraph()
+            with col1:
+                information()
+            with col2:
+                map()
 
-
-        st.title(stockData["data"][0]["name"] + "'s Dashboard")
-        polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey=WJtsWZ032pndm6sfV4BAUnbaoOL7ku6X".format(
-            stock_ticker)
-        # Polygon.io Response from API
-        polyresponse = requests.get(polystocks_url).json()
-        col1, col2= st.columns(2)
-        price()
-        with col1:
-            information()
-        with col2:
-            map()
     else:
         st.warning("Please input a Stock's ticker")
 
