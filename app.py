@@ -169,9 +169,6 @@ elif page == "Stock Search":
         name = stockData["data"][0]["name"]
         st.subheader(name + "'s Previous Day Closing Information")
         col1, col2, col3 = st.columns(3)
-        polystocks_url2 = "https://api.polygon.io/v2/aggs/ticker/{}/" \
-                          "prev?adjusted=true&apiKey={}".format(stock_ticker, config.polygon_line_graph_api_key)
-        polyresponse2 = requests.get(polystocks_url2).json()
         if st.button('See Previous Closing Information'):
             if polyresponse2["status"] == "OK":
                 closeprice = polyresponse2["results"][0]["c"]
@@ -226,20 +223,20 @@ elif page == "Stock Search":
         with col1:
             name = stockData["data"][0]["name"]
             number = st.number_input('Insert the amount of Stock you would like to buy of ' + name)
-            polystocks_url2 = "https://api.polygon.io/v2/aggs/ticker/{}/" \
-                              "prev?adjusted=true&apiKey={}".format(stock_ticker, config.polygon_line_graph_api_key)
-            polyresponse2 = requests.get(polystocks_url2).json()
-            highestprice = ((polyresponse2["results"][0]["h"]) * number)
-            lowestprice = ((polyresponse2["results"][0]["l"]) * number)
-            openprice = ((polyresponse2["results"][0]["o"]) * number)
+            highestprice = (polyresponse2["results"][0]["h"])
+            totalhighest = (highestprice * number)
+            lowestprice = (polyresponse2["results"][0]["l"])
+            totallowest = (lowestprice * number)
+            openprice = (polyresponse2["results"][0]["o"])
+            totalopen = (openprice * number)
         with col2:
             st.write("Had you bought today at:")
             st.write("Highest Price, you would have needed to have an equity of about: ")
-            st.write(highestprice)
+            st.write(totalhighest)
             st.write("Lowest Price, you would have needed to have an equity of about: ")
-            st.write(lowestprice)
+            st.write(totallowest)
             st.write("Open Price, you would have needed to have an equity of about: ")
-            st.write(openprice)
+            st.write(totalopen)
             st.warning("This is only done to give user's an estimate to how much equity one would need. "
                        "Does not include taxes and other fees")
 
@@ -281,6 +278,9 @@ elif page == "Stock Search":
                 stock_ticker, config.polygon_line_graph_api_key)
             # Polygon.io Response from API
             polyresponse = requests.get(polystocks_url).json()
+            polystocks_url2 = "https://api.polygon.io/v2/aggs/ticker/{}/" \
+                              "prev?adjusted=true&apiKey={}".format(stock_ticker, config.polygon_line_graph_api_key)
+            polyresponse2 = requests.get(polystocks_url2).json()
 
             col1, col2 = st.columns(2)     
             with col1:
