@@ -1,9 +1,11 @@
 from ast import AsyncFunctionDef
 from pyparsing import line
+import numpy as np
 import streamlit as st #Streamlit Application
 import requests
 import config
 import pandas as pd
+import csv
 
 
 #Changes the Favicon and Tab Title
@@ -31,7 +33,35 @@ if page == "Home":
         st.dataframe(popular_stocks[["Company", "Ticker symbol", "Price"] + parameters_table])
 
 
+    # Bar graph created to compare popular stock prices
+    def bar_graph():
+        st.subheader("Popular Stocks in the Market (Price Comparison)")
+        # Warning, requested by professor, to document static data.
+        st.warning("Stock prices are not updated in real time.")
+        # x_axis array is utilizing CSV file to import ticker symbols.
+        x_axis = []
+        with open('popular_stock_tickers.csv', newline='') as inputfile:
+            for row in csv.reader(inputfile):
+                x_axis.append(row[0])
+        # y_axis array is utilizing CSV file to import stock prices.
+        y_axis = []
+        with open('popular_stock_prices.csv', newline='') as inputfile:
+            for row in csv.reader(inputfile):
+                y_axis.append(row[0])
+        # Index is the list of ticker symbols (names)
+        data = pd.DataFrame({
+            'index': x_axis,
+            'Stock Price (USD)': [2567.49, 167.66, 282.06, 130.84, 3015.75, 79.79, 48.83, 153.23, 31.99, 33.45, 108.25,
+                                  231.34, 44.48, 47.35],
+        }).set_index('index')
+        # displaying bar-chart
+        st.bar_chart(data)
+        # Two widgets created for bar customization (width and height)
+
     interactive_table()
+    bar_graph()
+
+    
 #Adding a page for the line chart
     def prueba():
         popular_stocks = pd.read_csv('Popular_Stocks2.csv') 
@@ -79,6 +109,7 @@ if page == "Home":
 
     prueba()
     pass
+
 
 
 elif page == "Stock Search":
@@ -231,3 +262,7 @@ elif page == "Stock Search":
 
     else:
         st.warning("Please input a Stock's ticker")
+
+
+# testing
+
