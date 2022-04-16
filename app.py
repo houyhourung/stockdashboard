@@ -19,7 +19,7 @@ if page == "Home":
     # Display details of page 1
     #method to display interactive table
     def interactive_table():
-        st.subheader("Popular Stocks in the Market")
+        st.subheader("Popular Stocks in the Market Table")
         # Creates button so that users can choose what data they want to show onto the table
         parameters_table = st.multiselect(
             "Select one or more parameters to display in the interactive table",
@@ -34,16 +34,18 @@ if page == "Home":
     interactive_table()
 #Adding a page for the line chart
     def prueba():
+        st.subheader("Popular Stocks Price Graph")
         popular_stocks = pd.read_csv('Popular_Stocks2.csv') 
-
+        
+        st.sidebar.subheader("Graph options:")
 # Widget (if check box is selected displays Chart data size)
         amountElements = st.sidebar.checkbox(
             'Show element quantity')
 
 #Widget (on the side bar showing which line graph you would like to see)    
         element = st.sidebar.radio(
-            "Select element",
-            ('Price', 'high', 'low','all'))
+            "Select what you would like to display on graph:",
+            ('Price', 'High', 'Low','All'))
         if element == 'Price':
             d = {'Price': popular_stocks["Price"]}
             chart_data = pd.DataFrame(
@@ -52,24 +54,24 @@ if page == "Home":
             st.line_chart(chart_data)
             if amountElements:
                 st.write("Quantity:", chart_data.size)
-        elif element == 'low':
-                d = {'low': popular_stocks["Low"]}
+        elif element == 'Low':
+                d = {'Low': popular_stocks["Low"]}
                 chart_data = pd.DataFrame(
                     data=d)
 
                 st.line_chart(chart_data)
                 if amountElements:
                     st.write("Quantity:", chart_data.size)
-        elif element == 'high':
-                d = {'high': popular_stocks["High"]}
+        elif element == 'High':
+                d = {'High': popular_stocks["High"]}
                 chart_data = pd.DataFrame(
                     data=d)
 
                 st.line_chart(chart_data)
                 if amountElements:
                     st.write("Quantity:", chart_data.size)
-        elif element == 'all':
-                d = {'Price': popular_stocks["Price"], 'high': popular_stocks["High"], 'low': popular_stocks["Low"]}
+        elif element == 'All':
+                d = {'Price': popular_stocks["Price"], 'High': popular_stocks["High"], 'Low': popular_stocks["Low"]}
                 chart_data = pd.DataFrame(
                 data=d)
 
