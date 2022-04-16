@@ -55,6 +55,7 @@ if page == "Home":
         # Two widgets created for bar customization (width and height)
 
 
+
     # Adding a page for the line chart
     def prueba():
         popular_stocks = pd.read_csv('Popular_Stocks2.csv')
@@ -205,7 +206,6 @@ elif page == "Stock Search":
             else:
                 st.error("No ticker found, please check input")
 
-
     # Creating line graph
     def linegraph():
         alpha_vantage_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(
@@ -253,9 +253,9 @@ elif page == "Stock Search":
         folium.Marker([latitude, longitude], popup="HeadQuarters", tooltip="HeadQuarters").add_to(m)
         # call to render Folium map in Streamlit
         folium_static(m)
+    
+    #Streamlit SideBar Navigation
 
-
-    # Streamlit SideBar Navigation
     st.sidebar.subheader("Stock Dashboard")
 
     # Input from the user in order to get a Stock
@@ -269,6 +269,7 @@ elif page == "Stock Search":
             "symbols": stock_ticker,
             "api_token": api_token
         }
+
         stockData_url = "https://api.stockdata.org/v1/data/quote?"
         stockData = requests.get(stockData_url, params=parameters).json()
 
@@ -280,7 +281,8 @@ elif page == "Stock Search":
                 stock_ticker, config.polygon_line_graph_api_key)
             # Polygon.io Response from API
             polyresponse = requests.get(polystocks_url).json()
-            col1, col2 = st.columns(2)
+
+            col1, col2 = st.columns(2)     
             with col1:
                 information()
             with col2:
@@ -292,6 +294,7 @@ elif page == "Stock Search":
 
     else:
         st.warning("Please input a Stock's ticker")
+
 
 # testing
 
