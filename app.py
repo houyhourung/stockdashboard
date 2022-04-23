@@ -214,7 +214,7 @@ elif page == "Stock Search":
             columns={'1. open': 'Open', '2. high': 'High', '3. low': 'Low', '4. close': 'Close', '5. volume': 'Volume'})
         data = data[['Open', 'High', 'Low', 'Close', 'Volume']]
         # showing the last 5 days open, high, low, close, and volume price of the stock
-        st.line_chart(data=data.tail(5))
+        st.line_chart(data=data.head(5))
 
 
     def calculator():
