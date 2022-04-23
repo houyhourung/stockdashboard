@@ -3,7 +3,6 @@ from pyparsing import line
 import numpy as np
 import streamlit as st  # Streamlit Application
 import requests
-import config
 import pandas as pd
 import csv
 
@@ -206,7 +205,7 @@ elif page == "Stock Search":
     # Creating line graph
     def linegraph():
         alpha_vantage_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(
-            stock_ticker, config.alpha_vantage_api_key)
+            stock_ticker, st.secrets["alpha_vantage_api_key"])
         line_stock_data = requests.get(alpha_vantage_url).json()
         # creating graph using DataFrame
         data = pd.DataFrame.from_dict(line_stock_data['Time Series (Daily)'], orient='index').sort_index(axis=1)
@@ -259,7 +258,7 @@ elif page == "Stock Search":
     userInput = st.sidebar.text_input("Enter a valid stock ticker....GOOG")
 
     stock_ticker = userInput.upper()
-    api_token = config.stockData_api_key
+    api_token = st.secrets["stockData_api_key"]
 
     if stock_ticker:
         parameters = {
@@ -275,11 +274,11 @@ elif page == "Stock Search":
         else:
             st.title(stockData["data"][0]["name"] + "'s Dashboard")
             polystocks_url = "https://api.polygon.io/v3/reference/tickers/{}?apiKey={}".format(
-                stock_ticker, config.polygon_line_graph_api_key)
+                stock_ticker, st.secrets["polygon_line_graph_api_key"])
             # Polygon.io Response from API
             polyresponse = requests.get(polystocks_url).json()
             polystocks_url2 = "https://api.polygon.io/v2/aggs/ticker/{}/" \
-                              "prev?adjusted=true&apiKey={}".format(stock_ticker, config.polygon_line_graph_api_key)
+                              "prev?adjusted=true&apiKey={}".format(stock_ticker, st.secrets["polygon_line_graph_api_key"])
             polyresponse2 = requests.get(polystocks_url2).json()
 
             col1, col2 = st.columns(2)     
